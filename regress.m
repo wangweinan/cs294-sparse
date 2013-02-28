@@ -1,3 +1,4 @@
+feature(’numThreads’, getenv(NSLOTS))
 % Sentiment Scorer with Linear Regression
 
 % This is tokenized data from the Multi-Domain Sentiment Dataset found at:
