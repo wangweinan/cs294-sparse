@@ -1,1 +1,1 @@
-matlab CMD BATCH --no-save regress.m regress.out
+matlab CMD BATCH  regress.m
