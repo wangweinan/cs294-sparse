@@ -85,7 +85,7 @@ y = cell2mat(smap(tokens(ratingPositions + 1))) - '0';
 yuniq = y(uniqueReviews);
 
 
-save('model-stemmed.mat', 'XStemmed', 'yuniq');
+save('model-stemmed.mat', 'Xstemmed', 'yuniq');
 
 
 
