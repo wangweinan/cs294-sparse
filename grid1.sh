@@ -1,1 +1,1 @@
-matlab -r regress.m
+matlab -nodesktop -splash -r regress
