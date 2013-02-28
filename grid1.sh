@@ -1,1 +1,1 @@
-matlab CMD BATCH  regress.m
+matlab -r regress.m
