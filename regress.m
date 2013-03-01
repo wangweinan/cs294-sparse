@@ -1,4 +1,3 @@
-feature('numThreads', 12)
 % Sentiment Scorer with Linear Regression
 
 % This is tokenized data from the Multi-Domain Sentiment Dataset found at:
@@ -49,7 +48,7 @@ uniqueReviews = uniqueReviews(uniqueReviews>0);
 numUniqueReviews = length(uniqueReviews);
 Xstemmed = sparse(1 + dictStemmedSize, numUniqueReviews);
 
-
+matlabpool open local 12
 parfor i = 1 : numUniqueReviews
     m=uniqueReviews(i);
     reviewTexts = tokens(reviewTextBeginPositions(m) : ...
@@ -74,6 +73,8 @@ parfor i = 1 : numUniqueReviews
             dictStemmedSize, 1)];
        
 end
+
+matlabpool close
 
 
 
