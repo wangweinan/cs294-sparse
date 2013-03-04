@@ -49,10 +49,59 @@
 \def\wl{\par \vspace{\baselineskip}}
 
 \section{Abstract}
-
-The initial objective of this assignment was to use linear regression sentiment model to analyze the rating of amazon reviews. We constructed a sparse matrix which has columns of all the reviews and rows of all the stemmed tokens. For regression model, we utilized Stochastic Gradient Method and also tested the Ridge Regression using \(L-2\) loss function. As for evaluation, we did a ten-fold cross-validation. As for tools, we mainly used SciPy and Matlab.
+The initial objective of this assignment was to use linear regression sentiment model to analyze the rating of amazon reviews. We constructed a sparse matrix, which has columns of all the reviews and rows of all the stemmed tokens. We adopted the bag-of-word model of text and used unigrams as features. For regression model, we utilized Stochastic Gradient Method and also tested the Ridge Regression using \(L_{2}\) loss function. As for evaluation, we did a ten-fold cross-validation. As for tools, we mainly used SciPy and Matlab. 
 
 \section{Introduction}
+In the amazon reviews dataset, assume we have N distinct reviews and each review is labeled as $D_{1}, D_{2}, \ldots , D_{N}$. The unique tokens of all the reviews is denoted as T and have dimension M. Each review has a feature vector $\mathrm{f}_{i} = (f^{1}_{i}, f^{2}_{i}, \ldots , f^{M}_{i})$ which keeps track of the count of each token in document $D_{i}$. Also $D_{i}$ has a corresponding rating score, on a scale of 1 to 5, which we denote as $y_{i}$. Therefore, we have a sparse matrix X that combines $\mathrm{f}_{i}$ by column and has dimension of $M \times N$ and a vector y contains all the review scores. For example, $X_{a,b}$ gives us the number of appearance of $a^{th}$ token in review b and $y_{b}$ is the corresponding rating score. 
+
+The goal of this assignment is to construct a linear prediction model, which takes the count of each token in a review, and predict the review score $\hat{y}$:
+\begin{equation}
+ \hat{y} = X^{T}\beta
+ \end{equation}
+ In order to minimize the $l_{2}$ norm of error, we consider using Ridge regularization to estimate $\beta$: 
+\begin{equation}
+\hat{\beta} = {(X^{T}X+\lambda I)}^{-1}X^{T}y 
+\end{equation}
+Since X has large dimension and it would be very time costuming to compute ${(X^{T}X+\lambda I)}^{-1}$ so we would apply stochastic gradient method to compute $\hat{\beta}$. 
+
+\section{Data Preparation}
+At this stage, we want to construct the X matrix and y vectors from all reviews. We downloaded the tokenized.mat file and used Matlab to construct the X as a sparse matrix and the y vector. 
+
+First of all, we removed all the tokens which have total token count that is lower than 300. Also we stemmed all the terms (using package PorterStemmer) and removed the stop words in the procedure of constructing X, which leaves us only 13976 useful terms out of 1796312 tokens. In order to avoid duplicated reviews, we used first ten words of each review as the hash key and used hashmap to keep the unique reviews. As a result, out of about one million reviews, there are only 488012 distinct reviews.
+
+
+We used Parallel Computing Toolbox with 12 threads and it took about 20 minutes to finish procedure.  Finally we have a sparse matrix X with dimension $13976 \times 488012$. 
+
+\section{Regression Model}
+We picked the 5000 most frequently occurred tokens by decently ordering the row sums of the X and use these top frequent terms as features. As for find the optimum parameters, we decided to use Stochastic Gradient Descent Algorithms. In SciPy's Linear Model Packages, we implemented their function SGDClassifier (since scores in the datasets can only be 1, 2, 4 or 5).\\
+In this case, each example \(z\) is a pair \((x,y)\) composed of an arbitrary input \(x\)(counts of tokens) and a scalar output \(y\)(rating's scores). We consider a loss function \(l(\hat{y},y)\) that measures the cost of predicting scores \(\hat{y}\) when the actual answer is \(y\), and we choose a linear function \(f_{\beta}(x)\) parameterized by a weight vector \(\beta\) (as mentioned before). We seek the parameters that minimizes the loss function \(Q(z,\beta) = l(f_{\beta}(x),y)\) averaged on the examples. We have to settle for computing the average on a sample \(z_{1},z_{2},...,z_{n}\).
+\[E(f) = \int l(f(x),y)dP(z)\;\;\;E_{n}(f) = \frac{1}{n}\sum_{i=1}^{n} l(f(x_i),y_i)\]
+The \textsl{empirical risk} \(E_n(f)\) measures the training set performance. The \textsl{expected risk} \(E(f)\) measures the generalization performance, that is, the expected performance on future examples.\\
+The \textsl{stochastic gradient descent}(SGD) algorithm is a drastic simplification. Instead of computing the gradient of \(E_{n}(f_{\beta})\) exactly, each iteration estimates the gradient on the basis of a single randomly picked example \(z_t\):
+\[\beta_{t+1} = \beta_{t}  - \gamma_{t}\nabla_{\beta}Q(z_t,\beta_t).\]
+The stochastic process \({\beta_t,t=1,...}\) depends on the examples randomly picked at each iteration. \\
+After implementation in Python, we chose top ten influential words for each scores:
+\begin{table}[ht]\caption{Top Ten Words for Each Corresponding Scores}\centering\begin{tabular}{c c c c}\hline\hlineScore = 1 & Score = 2 & Score = 4 & Score  =5 \\ [0.5ex] % inserts table %heading\hlineailing&fiend&exposition&exuberance \\ascension&finer&dante&avalon \\crumbling&erroneous&bowden &dalai \\elisabeth & 93 & edda & discomfort \\brother & charisma & cronin & background \\ 
+dover & decrease & barbaric & bart \\
+bewildered & delineated & formal & classy \\
+ecology & flo & eaters & architect \\
+corinthians & crazed & 1952 & 170 \\
+diligent &dash & blackburn & ball\\[1ex]\hline\end{tabular}\label{table:nonlin}\end{table}
+
+
+\section{Experiment Results}
+The strongest positive terms will have large positive coefficient and the strongest negative terms will have negative coefficient which  absolute value would be large. We sorted the entries in our $\hat{\beta}$ and the strongest terms are as following:
+
+
+
+
+
+%ROC curve False positive rate vs true positive rate
+
+\section{Conclusion}
+
+
+
 
 
 
